@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.wms.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/maestranzeUC_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffffff',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffffff',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_CTR5Kcontinuumterritoriale_0');
+        map.getPane('pane_CTR5Kcontinuumterritoriale_0').style.zIndex = 400;
+        var layer_CTR5Kcontinuumterritoriale_0 = L.WMS.layer("http://www502.regione.toscana.it/ows_ctr/com.rt.wms.RTmap/ows?map=owsctr", "rt_ctr.5k", {
+            pane: 'pane_CTR5Kcontinuumterritoriale_0',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_CTR5Kcontinuumterritoriale_0);
+        function pop_maestranzeUC_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Cognome</th>\
+                        <td>' + (feature.properties['Cognome'] !== null ? autolinker.link(feature.properties['Cognome'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Comune</th>\
+                        <td>' + (feature.properties['Comune'] !== null ? autolinker.link(feature.properties['Comune'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Squadra</th>\
+                        <td>' + (feature.properties['Squadra'] !== null ? autolinker.link(feature.properties['Squadra'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_maestranzeUC_1_0() {
+            return {
+                pane: 'pane_maestranzeUC_1',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,253,2,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_maestranzeUC_1');
+        map.getPane('pane_maestranzeUC_1').style.zIndex = 401;
+        map.getPane('pane_maestranzeUC_1').style['mix-blend-mode'] = 'normal';
+        var layer_maestranzeUC_1 = new L.geoJson(json_maestranzeUC_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_maestranzeUC_1',
+            layerName: 'layer_maestranzeUC_1',
+            pane: 'pane_maestranzeUC_1',
+            onEachFeature: pop_maestranzeUC_1,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_maestranzeUC_1_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_maestranzeUC_1);
+        map.addLayer(layer_maestranzeUC_1);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/maestranzeUC_1.png" /> maestranze UC': layer_maestranzeUC_1,"CTR5K continuum territoriale": layer_CTR5Kcontinuumterritoriale_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_maestranzeUC_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Cognome'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['Cognome']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_maestranzeUC_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Cognome": "str","Comune": "str","Squadra": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_maestranzeUC_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Cognome'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['Cognome']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_maestranzeUC_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Cognome = document.createElement('div');
+            div_Cognome.id = "div_Cognome";
+            div_Cognome.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Cognome);
+            sel_Cognome = document.createElement('select');
+            sel_Cognome.multiple = true;
+            sel_Cognome.size = 10;
+            sel_Cognome.id = "sel_Cognome";
+            var Cognome_options_str = "<option value='' unselected></option>";
+            sel_Cognome.onchange = function(){filterFunc()};
+            Cognome_options_str  += '<option value="Abrami">Abrami</option>';
+            Cognome_options_str  += '<option value="Biagioni">Biagioni</option>';
+            Cognome_options_str  += '<option value="Bonini">Bonini</option>';
+            Cognome_options_str  += '<option value="Borghesi">Borghesi</option>';
+            Cognome_options_str  += '<option value="Bosi">Bosi</option>';
+            Cognome_options_str  += '<option value="Casini">Casini</option>';
+            Cognome_options_str  += '<option value="Costa">Costa</option>';
+            Cognome_options_str  += '<option value="Donati">Donati</option>';
+            Cognome_options_str  += '<option value="Franchi">Franchi</option>';
+            Cognome_options_str  += '<option value="Mazzei">Mazzei</option>';
+            Cognome_options_str  += '<option value="Micchi">Micchi</option>';
+            Cognome_options_str  += '<option value="Nuccini">Nuccini</option>';
+            Cognome_options_str  += '<option value="Ottolini">Ottolini</option>';
+            Cognome_options_str  += '<option value="Pucci">Pucci</option>';
+            Cognome_options_str  += '<option value="Rocchiccioli">Rocchiccioli</option>';
+            Cognome_options_str  += '<option value="Sarti">Sarti</option>';
+            Cognome_options_str  += '<option value="Sassi">Sassi</option>';
+            Cognome_options_str  += '<option value="Scognamiglio">Scognamiglio</option>';
+            Cognome_options_str  += '<option value="Tolaini">Tolaini</option>';
+            sel_Cognome.innerHTML = Cognome_options_str;
+            div_Cognome.appendChild(sel_Cognome);
+            var lab_Cognome = document.createElement('div');
+            lab_Cognome.innerHTML = 'Cognome';
+            lab_Cognome.className = 'filterlabel';
+            div_Cognome.appendChild(lab_Cognome);
+            var reset_Cognome = document.createElement('div');
+            reset_Cognome.innerHTML = 'clear filter';
+            reset_Cognome.className = 'filterlabel';
+            reset_Cognome.onclick = function() {
+                var options = document.getElementById("sel_Cognome").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Cognome.appendChild(reset_Cognome);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Comune = document.createElement('div');
+            div_Comune.id = "div_Comune";
+            div_Comune.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Comune);
+            sel_Comune = document.createElement('select');
+            sel_Comune.multiple = true;
+            sel_Comune.size = 10;
+            sel_Comune.id = "sel_Comune";
+            var Comune_options_str = "<option value='' unselected></option>";
+            sel_Comune.onchange = function(){filterFunc()};
+            Comune_options_str  += '<option value="Barga">Barga</option>';
+            Comune_options_str  += '<option value="Camaiore">Camaiore</option>';
+            Comune_options_str  += '<option value="Camporgiano">Camporgiano</option>';
+            Comune_options_str  += '<option value="Castelnuovo di Garfagnana">Castelnuovo di Garfagnana</option>';
+            Comune_options_str  += '<option value="Castiglione di Garfagnana">Castiglione di Garfagnana</option>';
+            Comune_options_str  += '<option value="Fosciandora">Fosciandora</option>';
+            Comune_options_str  += '<option value="Molazzana">Molazzana</option>';
+            Comune_options_str  += '<option value="Pieve Fosciana">Pieve Fosciana</option>';
+            Comune_options_str  += '<option value="San Romano in Garfagnana">San Romano in Garfagnana</option>';
+            Comune_options_str  += '<option value="Sillano Giuncugnano">Sillano Giuncugnano</option>';
+            Comune_options_str  += '<option value="Villa Collemandina">Villa Collemandina</option>';
+            sel_Comune.innerHTML = Comune_options_str;
+            div_Comune.appendChild(sel_Comune);
+            var lab_Comune = document.createElement('div');
+            lab_Comune.innerHTML = 'Comune';
+            lab_Comune.className = 'filterlabel';
+            div_Comune.appendChild(lab_Comune);
+            var reset_Comune = document.createElement('div');
+            reset_Comune.innerHTML = 'clear filter';
+            reset_Comune.className = 'filterlabel';
+            reset_Comune.onclick = function() {
+                var options = document.getElementById("sel_Comune").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Comune.appendChild(reset_Comune);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Squadra = document.createElement('div');
+            div_Squadra.id = "div_Squadra";
+            div_Squadra.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Squadra);
+            sel_Squadra = document.createElement('select');
+            sel_Squadra.multiple = true;
+            sel_Squadra.size = 4;
+            sel_Squadra.id = "sel_Squadra";
+            var Squadra_options_str = "<option value='' unselected></option>";
+            sel_Squadra.onchange = function(){filterFunc()};
+            Squadra_options_str  += '<option value="Garfagnana 12">Garfagnana 12</option>';
+            Squadra_options_str  += '<option value="Garfagnana 13">Garfagnana 13</option>';
+            Squadra_options_str  += '<option value="Garfagnana 14">Garfagnana 14</option>';
+            Squadra_options_str  += '<option value="Garfagnana 15">Garfagnana 15</option>';
+            sel_Squadra.innerHTML = Squadra_options_str;
+            div_Squadra.appendChild(sel_Squadra);
+            var lab_Squadra = document.createElement('div');
+            lab_Squadra.innerHTML = 'Squadra';
+            lab_Squadra.className = 'filterlabel';
+            div_Squadra.appendChild(lab_Squadra);
+            var reset_Squadra = document.createElement('div');
+            reset_Squadra.innerHTML = 'clear filter';
+            reset_Squadra.className = 'filterlabel';
+            reset_Squadra.onclick = function() {
+                var options = document.getElementById("sel_Squadra").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Squadra.appendChild(reset_Squadra);
+        resetLabels([layer_maestranzeUC_1]);
+        map.on("zoomend", function(){
+            resetLabels([layer_maestranzeUC_1]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_maestranzeUC_1]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_maestranzeUC_1]);
+        });
+        </script>
+    </body>
+</html>
